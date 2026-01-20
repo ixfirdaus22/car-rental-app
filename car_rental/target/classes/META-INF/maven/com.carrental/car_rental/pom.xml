@@ -3,5 +3,19 @@
   <groupId>com.carrental</groupId>
   <artifactId>car_rental</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>car_rental</name>
+  <packaging>jar</packaging>
+  <name>Car Rental Application</name>
+  <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+  <dependencies>
+    <!-- Source: https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.31</version>
+    <scope>compile</scope>
+</dependency>
+  </dependencies>
 </project>
