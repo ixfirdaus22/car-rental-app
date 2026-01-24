@@ -22,28 +22,64 @@
                 <div class="card-body">
                     <h3 class="text-center mb-4">User Registration</h3>
 
-                    <form action="register" method="post">
+                    <!-- Server-side error messages -->
+                    <%
+   						 String error = (String) request.getAttribute("error");
+  						  if (error != null) {
+					%>
+					    <div class="alert alert-danger">
+				        <%= error %>
+					    </div>
+					<%
+					    }
+					%>
 
+
+                    <form action="register" method="post" novalidate>
+
+                        <!-- Full Name -->
                         <div class="mb-3">
                             <label class="form-label">Full Name</label>
-                            <input type="text" name="username" class="form-control" required>
+                            <input type="text"
+                                   name="username"
+                                   class="form-control"
+                                   required
+                                   minlength="3"
+                                   pattern="[A-Za-z ]+"
+                                   title="Only alphabets allowed (min 3 characters)">
                         </div>
 
+                        <!-- Email -->
                         <div class="mb-3">
                             <label class="form-label">Email Address</label>
-                            <input type="email" name="email" class="form-control" required>
+                            <input type="email"
+                                   name="email"
+                                   class="form-control"
+                                   required>
                         </div>
 
+                        <!-- Password -->
                         <div class="mb-3">
                             <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" required>
+                            <input type="password"
+                                   name="password"
+                                   class="form-control"
+                                   required
+                                   minlength="6"
+                                   title="Password must be at least 6 characters">
                         </div>
 
+                        <!-- Phone -->
                         <div class="mb-3">
                             <label class="form-label">Phone</label>
-                            <input type="text" name="phone" class="form-control">
+                            <input type="text"
+                                   name="phone"
+                                   class="form-control"
+                                   pattern="[0-9]{10}"
+                                   title="Enter 10-digit mobile number">
                         </div>
 
+                        <!-- Role -->
                         <div class="mb-3">
                             <label class="form-label">Role</label>
                             <select name="role" class="form-select" required>

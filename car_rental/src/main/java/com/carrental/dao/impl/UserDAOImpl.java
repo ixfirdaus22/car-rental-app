@@ -2,6 +2,7 @@ package com.carrental.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
 
 import com.carrental.dao.UserDAO;
@@ -59,5 +60,30 @@ public class UserDAOImpl implements UserDAO{
 	public boolean deleteUser(int userId) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public User getUserByEmailAndPassword(String email, String password) {
+		String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+		
+		try (Connection con = DBUtil.getConnection();
+				PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setString(1,  email);
+			ps.setString(2,  password);
+			
+			ResultSet rs = ps.executeQuery();
+			
+			if (rs.next()) {
+				User user = new User();
+				user.setUserId(rs.getInt("user_id"));
+				user.setName(rs.getString("name"));
+				user.setEmail(rs.getString("email"));
+				user.setRole(rs.getString("role"));
+				return user;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
