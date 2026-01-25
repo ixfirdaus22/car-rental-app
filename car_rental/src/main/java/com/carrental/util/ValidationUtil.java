@@ -18,4 +18,21 @@ public class ValidationUtil {
     public static boolean isValidPhone(String phone) {
         return phone == null || phone.isEmpty() || phone.matches("\\d{10}");
     }
+    
+    public static boolean isPositiveNumber(String value) {
+        try {
+            return Double.parseDouble(value) > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isValidYear(String value) {
+        try {
+            int year = Integer.parseInt(value);
+            return year >= 1990 && year <= 2100;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 }

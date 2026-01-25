@@ -10,6 +10,8 @@ public interface CarDAO {
 	
 	Car getCarById(int carId);
 	
+	List<Car> listCars();
+	
 	List<Car> getCarsByHost(int hostId);
 	
 	List<Car> getAllApprovedCars();
