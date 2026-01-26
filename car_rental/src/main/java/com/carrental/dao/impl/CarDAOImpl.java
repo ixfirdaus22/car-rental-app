@@ -24,6 +24,7 @@ public class CarDAOImpl implements CarDAO{
 	    car.setTransmission(rs.getString("transmission"));
 	    car.setPricePerDay(rs.getDouble("price_per_day"));
 	    car.setLocation(rs.getString("location"));
+	    car.setRating(rs.getDouble("rating"));
 	    car.setAvailabilityStatus(rs.getBoolean("availability_status"));
 	    car.setApproved(rs.getBoolean("is_approved"));
 	    return car;

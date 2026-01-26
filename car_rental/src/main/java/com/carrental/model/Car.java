@@ -12,6 +12,7 @@ public class Car {
 	private String transmission;
 	private double pricePerDay;
 	private String location;
+	private double rating;
 	private boolean availabilityStatus;
 	private boolean isApproved;
 	private LocalDateTime createdAt;
@@ -87,6 +88,14 @@ public class Car {
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
+	public double getRating() {
+	    return rating;
+	}
+
+	public void setRating(double rating) {
+	    this.rating = rating;
+	}
+
 	
 	
 }

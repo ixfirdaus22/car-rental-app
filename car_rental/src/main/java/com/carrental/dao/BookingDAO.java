@@ -1,5 +1,6 @@
 package com.carrental.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.carrental.model.Booking;
@@ -15,4 +16,6 @@ public interface BookingDAO {
 	List<Booking> getBookingByCar(int carId);
 	
 	boolean updateBookingStatus(int bookingId, String status);
+	
+	List<Integer> getBookedCarIds(LocalDate startDate, LocalDate endDate);
 }

@@ -21,7 +21,14 @@
     <h2 class="text-center mb-4">Available Cars</h2>
 
     <!-- Filter Form -->
-    <form method="get" action="cars" class="row g-3 mb-4">
+    <form method="get" action="search" class="row g-3 mb-4">
+    
+    <input type="hidden" name="startDate"
+           value="<%= request.getParameter("startDate") %>">
+
+    <input type="hidden" name="endDate"
+           value="<%= request.getParameter("endDate") %>">
+           
         <div class="col-md-4">
             <input type="text" name="model" class="form-control"
                    placeholder="Filter by Model">
@@ -30,11 +37,20 @@
             <input type="text" name="location" class="form-control"
                    placeholder="Filter by Location">
         </div>
-        <div class="col-md-4">
-            <button type="submit" class="btn btn-primary w-100">
-                Apply Filter
-            </button>
-        </div>
+        <div class="col-md-3">
+        <select name="sortBy" class="form-select">
+            <option value="">Sort By</option>
+            <option value="priceAsc">Price: Low → High</option>
+            <option value="priceDesc">Price: High → Low</option>
+            <option value="rating">Rating</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary w-100">
+            Apply
+        </button>
+    </div>
     </form>
 
     <!-- Cars Grid -->
@@ -58,6 +74,7 @@
                         <strong>Transmission:</strong> <%= car.getTransmission() %><br>
                         <strong>Location:</strong> <%= car.getLocation() %><br>
                         <strong>Price/Day:</strong> ₹ <%= car.getPricePerDay() %>
+                        <strong>Rating:</strong> <%= car.getRating() %> ⭐<br>
                     </p>
                     <a href="#" class="btn btn-success w-100 disabled">
                         Book Now
