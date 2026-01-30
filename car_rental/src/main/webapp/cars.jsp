@@ -23,11 +23,16 @@
     <!-- Filter Form -->
     <form method="get" action="search" class="row g-3 mb-4">
     
-    <input type="hidden" name="startDate"
-           value="<%= request.getParameter("startDate") %>">
-
-    <input type="hidden" name="endDate"
-           value="<%= request.getParameter("endDate") %>">
+    <%
+		String startDateParam = request.getParameter("startDate");
+		String endDateParam   = request.getParameter("endDate");
+		%>
+		
+		<input type="hidden" name="startDate"
+		       value="<%= startDateParam != null ? startDateParam : "" %>">
+		
+		<input type="hidden" name="endDate"
+       value="<%= endDateParam != null ? endDateParam : "" %>">
            
         <div class="col-md-4">
             <input type="text" name="model" class="form-control"
@@ -52,12 +57,17 @@
         </button>
     </div>
     </form>
+    
+    
 
     <!-- Cars Grid -->
     <div class="row">
 
 <%
     List<Car> carList = (List<Car>) request.getAttribute("carList");
+
+	String startDate = (String) request.getAttribute("startDate");
+	String endDate   = (String) request.getAttribute("endDate");
 
     if (carList != null && !carList.isEmpty()) {
         for (Car car : carList) {
@@ -76,9 +86,19 @@
                         <strong>Price/Day:</strong> ₹ <%= car.getPricePerDay() %>
                         <strong>Rating:</strong> <%= car.getRating() %> ⭐<br>
                     </p>
-                    <a href="#" class="btn btn-success w-100 disabled">
-                        Book Now
-                    </a>
+                    <!-- BOOK NOW FORM (per car) -->
+                	<form action="<%= request.getContextPath() %>/bookCar" method="post">
+	                    <input type="hidden" name="carId" value="<%= car.getCarId() %>" />
+	                    <input type="hidden" name="price" value="<%= car.getPricePerDay() %>" />
+	                    <input type="hidden" name="startDate"
+						       value="<%= startDate != null ? startDate : "" %>">					
+						<input type="hidden" name="endDate"
+						        value="<%= endDate != null ? endDate : "" %>">
+	
+	                    <button type="submit" class="btn btn-success w-100">
+	                        Book Now
+                    	</button>
+                	</form>
                 </div>
             </div>
         </div>

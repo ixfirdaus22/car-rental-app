@@ -29,39 +29,43 @@ public class SearchServlet extends HttpServlet {
         String startDateStr = request.getParameter("startDate");
         String endDateStr   = request.getParameter("endDate");
 
-        // Basic validation
-        if (startDateStr == null || endDateStr == null) {
-            response.sendRedirect("searchcars.jsp?error=date");
-            return;
-        }
+        LocalDate startDate = null;
+        LocalDate endDate   = null;
 
-        LocalDate startDate = LocalDate.parse(startDateStr);
-        LocalDate endDate   = LocalDate.parse(endDateStr);
+        if (startDateStr != null && endDateStr != null &&
+            !startDateStr.isEmpty() && !endDateStr.isEmpty() &&
+            !"null".equalsIgnoreCase(startDateStr) &&
+            !"null".equalsIgnoreCase(endDateStr)) {
+
+            startDate = LocalDate.parse(startDateStr);
+            endDate   = LocalDate.parse(endDateStr);
+        }
 
         String location = request.getParameter("location");
         String model    = request.getParameter("model");
         String sortBy   = request.getParameter("sortBy");
 
         List<Car> allCars = carDAO.listCars();
-
-        // Convert to Set for faster lookup
-        Set<Integer> bookedCarIds =
-                new HashSet<>(bookingDAO.getBookedCarIds(startDate, endDate));
-
         List<Car> availableCars = new ArrayList<>();
+
+        Set<Integer> bookedCarIds = new HashSet<>();
+        if (startDate != null && endDate != null) {
+            bookedCarIds.addAll(
+                bookingDAO.getBookedCarIds(startDate, endDate)
+            );
+        }
 
         for (Car car : allCars) {
 
-            // Exclude booked cars
-            if (bookedCarIds.contains(car.getCarId()))
+            if (!bookedCarIds.isEmpty() &&
+                bookedCarIds.contains(car.getCarId())) {
                 continue;
+            }
 
-            // Location filter
             if (location != null && !location.isEmpty()
                     && !car.getLocation().equalsIgnoreCase(location))
                 continue;
 
-            // Model filter
             if (model != null && !model.isEmpty()
                     && !car.getModel().equalsIgnoreCase(model))
                 continue;
@@ -69,19 +73,26 @@ public class SearchServlet extends HttpServlet {
             availableCars.add(car);
         }
 
-        // Sorting
         if ("priceAsc".equals(sortBy)) {
-            availableCars.sort(Comparator.comparingDouble(Car::getPricePerDay));
+            availableCars.sort(
+                Comparator.comparingDouble(Car::getPricePerDay)
+            );
         } else if ("priceDesc".equals(sortBy)) {
-            availableCars.sort(Comparator.comparingDouble(Car::getPricePerDay).reversed());
+            availableCars.sort(
+                Comparator.comparingDouble(Car::getPricePerDay).reversed()
+            );
         } else if ("rating".equals(sortBy)) {
-            availableCars.sort(Comparator.comparingDouble(Car::getRating).reversed());
+            availableCars.sort(
+                Comparator.comparingDouble(Car::getRating).reversed()
+            );
         }
+
         
-        System.out.println("SORT BY = " + sortBy);
-
-
+        request.setAttribute("startDate", startDateStr);
+        request.setAttribute("endDate", endDateStr);
         request.setAttribute("carList", availableCars);
-        request.getRequestDispatcher("cars.jsp").forward(request, response);
+        request.getRequestDispatcher("cars.jsp")
+               .forward(request, response);
     }
+
 }

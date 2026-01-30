@@ -1,5 +1,6 @@
 package com.carrental.dao;
 
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -7,7 +8,9 @@ import com.carrental.model.Booking;
 
 public interface BookingDAO {
 	
-	boolean createdBooking(Booking booking);
+	boolean isCarAvailable(int carId, LocalDate startDate, LocalDate endDate, Connection con);
+	
+	boolean createBooking(Booking booking, Connection con);
 	
 	Booking getBookingById(int bookingId);
 	
