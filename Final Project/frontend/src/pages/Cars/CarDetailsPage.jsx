@@ -161,12 +161,12 @@ export default function CarDetailsPage() {
   // Get car from state (passed from CarCard) or from database, then merge with database details
   const getCarDetails = () => {
     let selectedCar = location.state?.car || CAR_DATABASE[carId];
-    
+
     // If car was passed from CarCard, merge it with database details
     if (location.state?.car && CAR_DATABASE[carId]) {
       selectedCar = { ...CAR_DATABASE[carId], ...location.state.car };
     }
-    
+
     // If still no car, use database or default
     if (!selectedCar) {
       selectedCar = CAR_DATABASE[carId] || {
@@ -235,14 +235,14 @@ export default function CarDetailsPage() {
     if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
       return imageUrl;
     }
-    
+
     // If imageUrl is provided (just filename), use it
     if (imageUrl) {
       // Remove any leading slashes
       const cleanUrl = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
       return `/vehicle-images/${cleanUrl}`;
     }
-    
+
     // Fallback: Try to match based on make/model
     const makeModel = `${make || ''}${model || ''}`.toLowerCase().replace(/\s+/g, '');
     const imageMap = {
@@ -255,14 +255,14 @@ export default function CarDetailsPage() {
       'tatanexon': '/vehicle-images/Nexon.jpg',
       'marutimaruti': '/vehicle-images/Maruti.jpg'
     };
-    
+
     // Try to find matching image
     for (const [key, path] of Object.entries(imageMap)) {
       if (makeModel.includes(key)) {
         return path;
       }
     }
-    
+
     // Final fallback
     return '/vehicle-images/Accord.jpg';
   };
@@ -576,14 +576,14 @@ export default function CarDetailsPage() {
 
               {/* Buttons */}
               <div className="d-grid gap-2">
-                <button 
+                <button
                   className="btn btn-primary btn-lg"
                   onClick={handleBooking}
                 >
                   🚗 Book Now
                 </button>
                 {user && (
-                  <button 
+                  <button
                     className="btn btn-outline-primary"
                     onClick={() => setShowReviewForm(!showReviewForm)}
                   >
@@ -591,7 +591,7 @@ export default function CarDetailsPage() {
                   </button>
                 )}
                 {!user && (
-                  <button 
+                  <button
                     className="btn btn-outline-secondary"
                     onClick={() => navigate('/login')}
                   >
@@ -637,13 +637,13 @@ export default function CarDetailsPage() {
                 </div>
 
                 <div className="d-flex gap-2">
-                  <button 
+                  <button
                     className="btn btn-primary flex-grow-1"
                     onClick={handleAddReview}
                   >
                     Submit Review
                   </button>
-                  <button 
+                  <button
                     className="btn btn-outline-secondary flex-grow-1"
                     onClick={() => setShowReviewForm(false)}
                   >
