@@ -27,7 +27,8 @@ import lombok.Setter;
 @Setter
 @Table(name = "complaints", indexes = {
 		@Index(name = "idx_complaint_status", columnList = "status"),
-		@Index(name = "idx_complaint_created_at", columnList = "created_at")
+		@Index(name = "idx_complaint_created_at", columnList = "created_at"),
+		@Index(name = "idx_complaint_user", columnList = "user_id")
 })
 public class Complaint {
 

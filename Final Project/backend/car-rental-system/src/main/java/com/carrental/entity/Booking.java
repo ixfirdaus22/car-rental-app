@@ -30,7 +30,10 @@ import lombok.Setter;
 		@Index(name = "idx_booking_pickup_date", columnList = "pickup_date"),
 		@Index(name = "idx_booking_return_date", columnList = "return_date"),
 		@Index(name = "idx_booking_status", columnList = "status"),
-		@Index(name = "idx_booking_created_at", columnList = "created_at")
+		@Index(name = "idx_booking_created_at", columnList = "created_at"),
+		@Index(name = "idx_booking_conflict", columnList = "vehicle_id, status, pickup_date, return_date"),
+		@Index(name = "idx_booking_user", columnList = "user_id"),
+		@Index(name = "idx_booking_vehicle", columnList = "vehicle_id")
 })
 public class Booking {
 

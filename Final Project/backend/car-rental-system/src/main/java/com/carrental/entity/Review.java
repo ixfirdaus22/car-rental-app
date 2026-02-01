@@ -28,7 +28,9 @@ import lombok.Setter;
 @Table(name = "reviews", indexes = {
 		@Index(name = "idx_review_rating", columnList = "rating"),
 		@Index(name = "idx_review_status", columnList = "status"),
-		@Index(name = "idx_review_created_at", columnList = "created_at")
+		@Index(name = "idx_review_created_at", columnList = "created_at"),
+		@Index(name = "idx_review_vehicle_status", columnList = "vehicle_id, status"),
+		@Index(name = "idx_review_user", columnList = "user_id")
 })
 public class Review {
 

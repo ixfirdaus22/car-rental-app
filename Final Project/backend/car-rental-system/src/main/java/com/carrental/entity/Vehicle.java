@@ -30,7 +30,9 @@ import lombok.Setter;
 		@Index(name = "idx_vehicle_price", columnList = "price_per_day"),
 		@Index(name = "idx_vehicle_make", columnList = "make"),
 		@Index(name = "idx_vehicle_model", columnList = "model"),
-		@Index(name = "idx_vehicle_year", columnList = "year")
+		@Index(name = "idx_vehicle_year", columnList = "year"),
+		@Index(name = "idx_vehicle_vendor_status", columnList = "vendor_id, status"),
+		@Index(name = "idx_vehicle_vendor", columnList = "vendor_id")
 })
 public class Vehicle {
 

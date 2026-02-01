@@ -19,6 +19,10 @@ import com.carrental.repository.VehicleRepository;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Implementation of the {@link BookingService} interface.
+ * Handles the business logic for creating, retrieving, and managing bookings.
+ */
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
@@ -30,6 +34,16 @@ public class BookingServiceImpl implements BookingService {
 	private final VehicleRepository vehicleRepository;
 	private final PricingService pricingService;
 
+	/**
+	 * Creates a new booking for a user.
+	 * Performs validation on vehicle availability, dates, and conflicts.
+	 * Calculates the final price using {@link PricingService}.
+	 *
+	 * @param userEmail The email of the user creating the booking.
+	 * @param request   The booking details.
+	 * @return The created booking response.
+	 * @throws IllegalArgumentException if validation fails.
+	 */
 	@Override
 	@Transactional
 	public BookingResponse createBooking(String userEmail, BookingRequest request) {

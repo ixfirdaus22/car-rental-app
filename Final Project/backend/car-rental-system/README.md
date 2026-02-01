@@ -46,6 +46,8 @@ This backend application provides RESTful APIs for a car rental management syste
 - Booking status tracking
 - Date validation
 - Total amount calculation
+- Price breakdown (Base rate, Duration discounts, Taxes)
+- Conflict detection for overlapping dates
 - Vendor booking views
 
 ### Payment Processing
@@ -276,6 +278,7 @@ Authorization: Bearer <your-jwt-token>
 - `PUT /api/vehicles/{id}/status` - Update vehicle status (Vendor only)
 
 #### Bookings
+- `POST /api/bookings/calculate` - Calculate price breakdown (User)
 - `POST /api/bookings` - Create booking (User)
 - `GET /api/bookings/{id}` - Get booking by ID (User)
 - `GET /api/bookings/user` - Get user's bookings (User)

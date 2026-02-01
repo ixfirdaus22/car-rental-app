@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 import com.carrental.dto.PriceCalculationResponse;
 import com.carrental.entity.Vehicle;
 
+/**
+ * Service responsible for calculating rental prices.
+ * Handles base rates, duration-based discounts, and tax calculations.
+ */
 @Service
 public class PricingService {
 
@@ -15,6 +19,16 @@ public class PricingService {
     private static final double DISCOUNT_7_DAYS = 0.10; // 10% discount for > 7 days
     private static final double DISCOUNT_30_DAYS = 0.20; // 20% discount for > 30 days
 
+    /**
+     * Calculates the detailed price breakdown for a booking.
+     *
+     * @param vehicle    The vehicle being rented.
+     * @param pickupDate The start date of the rental.
+     * @param returnDate The end date of the rental.
+     * @return A {@link PriceCalculationResponse} containing base price, discounts,
+     *         tax, and total.
+     * @throws IllegalArgumentException if inputs are null.
+     */
     public PriceCalculationResponse calculatePrice(Vehicle vehicle, LocalDate pickupDate, LocalDate returnDate) {
         if (pickupDate == null || returnDate == null || vehicle == null) {
             throw new IllegalArgumentException("Invalid input for price calculation");
