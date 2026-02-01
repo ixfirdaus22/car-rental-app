@@ -50,6 +50,8 @@ export const getBookingById = (id) => api.get(`/bookings/${id}`);
 export const getUserBookings = () => api.get("/bookings/user");
 export const cancelBooking = (id) => api.put(`/bookings/${id}/cancel`);
 export const getVendorBookings = () => api.get("/bookings/vendor");
+export const calculatePrice = (bookingData) => api.post("/bookings/calculate", bookingData);
+
 
 // Payments
 export const createPayment = (paymentData) => api.post("/payments", paymentData);

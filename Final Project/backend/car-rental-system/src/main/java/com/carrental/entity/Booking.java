@@ -14,6 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
@@ -25,7 +26,12 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "bookings")
+@Table(name = "bookings", indexes = {
+		@Index(name = "idx_booking_pickup_date", columnList = "pickup_date"),
+		@Index(name = "idx_booking_return_date", columnList = "return_date"),
+		@Index(name = "idx_booking_status", columnList = "status"),
+		@Index(name = "idx_booking_created_at", columnList = "created_at")
+})
 public class Booking {
 
 	@Id

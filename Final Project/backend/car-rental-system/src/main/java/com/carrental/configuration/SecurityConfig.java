@@ -60,6 +60,8 @@ public class SecurityConfig {
 																														// vendor
 																														// vehicles
 						// Booking endpoints - User access
+						.requestMatchers(HttpMethod.POST, "/api/bookings/calculate").authenticated() // POST calculate
+																										// price
 						.requestMatchers(HttpMethod.POST, "/api/bookings").authenticated() // POST create booking
 						.requestMatchers(HttpMethod.GET, "/api/bookings/{id}").authenticated() // GET booking by ID
 						.requestMatchers(HttpMethod.GET, "/api/bookings/user").authenticated() // GET user bookings

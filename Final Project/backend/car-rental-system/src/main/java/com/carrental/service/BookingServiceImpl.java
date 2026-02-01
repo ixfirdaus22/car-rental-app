@@ -1,7 +1,5 @@
 package com.carrental.service;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +28,7 @@ public class BookingServiceImpl implements BookingService {
 	private final BookingRepository bookingRepository;
 	private final UserRepository userRepository;
 	private final VehicleRepository vehicleRepository;
+	private final PricingService pricingService;
 
 	@Override
 	@Transactional
@@ -66,12 +65,13 @@ public class BookingServiceImpl implements BookingService {
 			throw new IllegalArgumentException("Vehicle is already booked for the selected dates");
 		}
 
-		// Calculate total amount
-		long days = ChronoUnit.DAYS.between(request.getPickupDate(), request.getReturnDate());
-		if (days <= 0) {
-			days = 1; // Minimum 1 day
-		}
-		Double totalAmount = vehicle.getPricePerDay() * days;
+		// Calculate total amount using PricingService
+		com.carrental.dto.PriceCalculationResponse priceDetails = pricingService.calculatePrice(
+				vehicle,
+				request.getPickupDate(),
+				request.getReturnDate());
+
+		Double totalAmount = priceDetails.getTotalAmount();
 
 		// Create booking
 		Booking booking = new Booking();
@@ -95,6 +95,21 @@ public class BookingServiceImpl implements BookingService {
 
 		// Convert to response
 		return convertToResponse(savedBooking);
+	}
+
+	@Override
+	public com.carrental.dto.PriceCalculationResponse calculatePrice(BookingRequest request) {
+		// Find vehicle
+		Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
+				.orElseThrow(() -> new IllegalArgumentException("Vehicle not found"));
+
+		// Validate dates
+		if (request.getReturnDate().isBefore(request.getPickupDate()) ||
+				request.getReturnDate().isEqual(request.getPickupDate())) {
+			throw new IllegalArgumentException("Return date must be after pickup date");
+		}
+
+		return pricingService.calculatePrice(vehicle, request.getPickupDate(), request.getReturnDate());
 	}
 
 	@Override

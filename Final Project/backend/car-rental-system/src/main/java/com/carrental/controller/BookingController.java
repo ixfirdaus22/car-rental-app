@@ -56,6 +56,24 @@ public class BookingController {
 		}
 	}
 
+	@PostMapping("/calculate")
+	public ResponseEntity<?> calculatePrice(@Valid @RequestBody BookingRequest request) {
+		try {
+			// Extract authenticated user from SecurityContext
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
+				return ResponseEntity.status(401).body("Unauthorized");
+			}
+
+			com.carrental.dto.PriceCalculationResponse response = bookingService.calculatePrice(request);
+			return ResponseEntity.ok(response);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body("Internal server error: " + e.getMessage());
+		}
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getBookingById(@PathVariable Integer id) {
 		try {
@@ -137,7 +155,7 @@ public class BookingController {
 			// Verify vendor role
 			User vendor = userRepository.findByEmail(vendorEmail)
 					.orElseThrow(() -> new IllegalArgumentException("Vendor not found"));
-			
+
 			if (vendor.getRole() != UserRole.VENDOR) {
 				return ResponseEntity.status(403).body("Only vendors can access this endpoint");
 			}

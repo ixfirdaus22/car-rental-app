@@ -17,4 +17,6 @@ public interface BookingService {
 
 	List<BookingResponse> getVendorBookings(String vendorEmail);
 
+	com.carrental.dto.PriceCalculationResponse calculatePrice(com.carrental.dto.BookingRequest request);
+
 }

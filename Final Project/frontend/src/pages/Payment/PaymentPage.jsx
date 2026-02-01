@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context';
-import { createBooking, createPayment } from '../../services/api';
+import { createBooking, createPayment, calculatePrice } from '../../services/api';
 
 export default function PaymentPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   const car = location.state?.car || location.state?.vehicle || null;
 
   // Helper function to get image path
@@ -16,14 +16,14 @@ export default function PaymentPage() {
     if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
       return imageUrl;
     }
-    
+
     // If imageUrl is provided (just filename), use it
     if (imageUrl) {
       // Remove any leading slashes
       const cleanUrl = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
       return `/vehicle-images/${cleanUrl}`;
     }
-    
+
     // Fallback: Try to match based on make/model
     const makeModel = `${make || ''}${model || ''}`.toLowerCase().replace(/\s+/g, '');
     const imageMap = {
@@ -36,14 +36,14 @@ export default function PaymentPage() {
       'tatanexon': '/vehicle-images/Nexon.jpg',
       'marutimaruti': '/vehicle-images/Maruti.jpg'
     };
-    
+
     // Try to find matching image
     for (const [key, path] of Object.entries(imageMap)) {
       if (makeModel.includes(key)) {
         return path;
       }
     }
-    
+
     // Final fallback
     return '/vehicle-images/Accord.jpg';
   };
@@ -54,6 +54,35 @@ export default function PaymentPage() {
   const [upiId, setUpiId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [priceDetails, setPriceDetails] = useState(null);
+
+  useEffect(() => {
+    if (pickupDate && dropoffDate && car) {
+      const start = new Date(pickupDate);
+      const end = new Date(dropoffDate);
+      if (end > start) {
+        fetchPriceDetails();
+      } else {
+        setPriceDetails(null);
+      }
+    }
+  }, [pickupDate, dropoffDate, car]);
+
+  const fetchPriceDetails = async () => {
+    try {
+      const response = await calculatePrice({
+        vehicleId: car.id || car.vehicleId || car.carId,
+        pickupDate,
+        returnDate: dropoffDate,
+        pickupLocation: pickupLocation || "TBD",
+        returnLocation: returnLocation || "TBD"
+      });
+      setPriceDetails(response.data);
+    } catch (err) {
+      console.error("Failed to calculate price:", err);
+      // Fallback or just ignore, user will see local calc till resolved
+    }
+  };
 
   if (!car || !user) {
     return (
@@ -71,12 +100,20 @@ export default function PaymentPage() {
     if (!pickupDate || !dropoffDate) return 0;
     const pickup = new Date(pickupDate);
     const dropoff = new Date(dropoffDate);
-    return Math.ceil((dropoff - pickup) / (1000 * 60 * 60 * 24));
+    const diff = Math.ceil((dropoff - pickup) / (1000 * 60 * 60 * 24));
+    return diff > 0 ? diff : 0;
   };
 
   const days = calculateDays();
   const pricePerDay = car.basePricePerDay || car.pricePerDay || 0;
-  const totalCost = days > 0 ? days * pricePerDay : 0;
+  // Fallback local calc if API fails or not yet called
+  const localTotalCost = days > 0 ? days * pricePerDay : 0;
+
+  // Use priceDetails if available, else fallback
+  const displayBasePrice = priceDetails ? priceDetails.basePrice : localTotalCost;
+  const displayTax = priceDetails ? priceDetails.taxAmount : (days > 0 ? localTotalCost * 0.1 : 0);
+  const displayDiscount = priceDetails ? priceDetails.discountAmount : 0;
+  const displayTotal = priceDetails ? priceDetails.totalAmount : (days > 0 ? localTotalCost * 1.1 : 0);
 
   const validatePayment = () => {
     setError('');
@@ -129,7 +166,7 @@ export default function PaymentPage() {
 
       const bookingResponse = await createBooking(bookingData);
       const bookingId = bookingResponse.data.id;
-      
+
       // Step 2: Create payment
       const paymentData = {
         bookingId: bookingId,
@@ -138,7 +175,7 @@ export default function PaymentPage() {
       };
 
       await createPayment(paymentData);
-      
+
       // Success
       alert('Payment successful! Your booking has been confirmed.');
       navigate('/bookings');
@@ -305,20 +342,26 @@ export default function PaymentPage() {
               <hr />
               <div className="d-flex justify-content-between mb-3">
                 <span>Subtotal:</span>
-                <strong>₹{(pricePerDay * days).toLocaleString()}</strong>
+                <strong>₹{displayBasePrice.toLocaleString()}</strong>
               </div>
+              {displayDiscount > 0 && (
+                <div className="d-flex justify-content-between mb-3 text-success">
+                  <span>Discount:</span>
+                  <strong>-₹{displayDiscount.toLocaleString()}</strong>
+                </div>
+              )}
               <div className="d-flex justify-content-between mb-3">
                 <span>Insurance:</span>
                 <strong>₹0 (Included)</strong>
               </div>
               <div className="d-flex justify-content-between mb-3">
-                <span>Taxes & Fees:</span>
-                <strong>₹{Math.round(totalCost * 0.1).toLocaleString()}</strong>
+                <span>Taxes & Fees (10%):</span>
+                <strong>₹{displayTax.toLocaleString()}</strong>
               </div>
               <hr className="my-3" />
               <div className="d-flex justify-content-between mb-4">
                 <h5 className="mb-0">Total Amount:</h5>
-                <h4 className="text-primary mb-0">₹{Math.round(totalCost * 1.1).toLocaleString()}</h4>
+                <h4 className="text-primary mb-0">₹{displayTotal.toLocaleString()}</h4>
               </div>
 
               {/* Terms */}
@@ -340,7 +383,7 @@ export default function PaymentPage() {
                 onClick={handlePayment}
                 disabled={loading || days <= 0}
               >
-                {loading ? '⏳ Processing...' : `📱 Pay via UPI ₹${Math.round(totalCost * 1.1).toLocaleString()}`}
+                {loading ? '⏳ Processing...' : `📱 Pay via UPI ₹${displayTotal.toLocaleString()}`}
               </button>
 
               {/* Info */}
