@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { getRevenueReport, getBookingAnalytics, getVehiclePerformance, getUserAnalytics } from '../../services/api';
+import { getRevenueReport, getBookingAnalytics, getVehiclePerformance, getUserAnalytics, downloadBookingsPdf, downloadBookingsCsv } from '../../services/api';
 
 const COLORS = ['#0d6efd', '#198754', '#ffc107', '#0dcaf0', '#dc3545', '#6f42c1'];
 
@@ -37,6 +37,38 @@ export default function AdminReportsPage() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExportPdf = async () => {
+    try {
+      const response = await downloadBookingsPdf();
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'bookings_report.pdf');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      alert("Failed to download PDF");
+    }
+  };
+
+  const handleExportCsv = async () => {
+    try {
+      const response = await downloadBookingsCsv();
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'bookings_report.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+      alert("Failed to download CSV");
     }
   };
 
@@ -84,6 +116,12 @@ export default function AdminReportsPage() {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="fw-bold mb-0">📈 Reports & Analytics</h1>
         <div>
+          <button className="btn btn-outline-success me-2" onClick={handleExportCsv}>
+            Export CSV
+          </button>
+          <button className="btn btn-outline-danger me-2" onClick={handleExportPdf}>
+            Export PDF
+          </button>
           <button
             className={`btn me-2 ${period === 'month' ? 'btn-primary' : 'btn-outline-secondary'}`}
             onClick={() => setPeriod('month')}
@@ -151,7 +189,7 @@ export default function AdminReportsPage() {
             <div className="card-body">
               <div className="d-flex align-items-end mb-4 gap-3">
                 <h2 className="mb-0 fw-bold text-success">
-                  ₹{period === 'month' 
+                  ₹{period === 'month'
                     ? revenueData?.monthlyRevenue?.toLocaleString('en-IN', { maximumFractionDigits: 0 }) || '0'
                     : revenueData?.yearlyRevenue?.toLocaleString('en-IN', { maximumFractionDigits: 0 }) || '0'}
                 </h2>

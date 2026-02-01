@@ -25,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
+	private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BookingServiceImpl.class);
+
 	private final BookingRepository bookingRepository;
 	private final UserRepository userRepository;
 	private final VehicleRepository vehicleRepository;
@@ -88,6 +90,8 @@ public class BookingServiceImpl implements BookingService {
 
 		// Save booking
 		Booking savedBooking = bookingRepository.save(booking);
+
+		logger.info("New booking created: BookingID={} for User={}", savedBooking.getId(), user.getEmail());
 
 		// Convert to response
 		return convertToResponse(savedBooking);
@@ -155,6 +159,8 @@ public class BookingServiceImpl implements BookingService {
 
 		// Save booking
 		Booking updatedBooking = bookingRepository.save(booking);
+
+		logger.info("Booking cancelled: BookingID={} for User={}", booking.getId(), user.getEmail());
 
 		return convertToResponse(updatedBooking);
 	}

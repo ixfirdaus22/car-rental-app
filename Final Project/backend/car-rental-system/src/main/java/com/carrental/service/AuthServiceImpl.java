@@ -24,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
+	private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AuthServiceImpl.class);
+
 	private final UserRepository userRepo;
 	private final PasswordEncoder encoder;
 	private final AuthenticationManager authenticationManager;
@@ -33,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
 	public boolean register(RegisterRequest req) {
 		// Check if email exists
 		if (userRepo.findByEmail(req.getEmail()).isPresent()) {
+			logger.warn("Registration failed: Email {} already exists", req.getEmail());
 			return false;
 		}
 		// Create User Entity
@@ -79,13 +82,20 @@ public class AuthServiceImpl implements AuthService {
 		}
 
 		userRepo.save(user);
+		logger.info("New user registered: {}", req.getEmail());
 		return true;
 	}
 
 	@Override
 	public JwtAuthenticationResponse login(LoginRequest req) {
 		// Authenticate with Spring Security
-		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
+		try {
+			authenticationManager
+					.authenticate(new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
+		} catch (Exception e) {
+			logger.error("Login failed for email: {}", req.getEmail());
+			throw e;
+		}
 
 		User user = userRepo.findByEmail(req.getEmail())
 				.orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
@@ -113,6 +123,7 @@ public class AuthServiceImpl implements AuthService {
 		if (user.getGender() != null)
 			response.setGender(user.getGender().name());
 
+		logger.info("User logged in successfully: {}", req.getEmail());
 		return response;
 	}
 
@@ -209,7 +220,7 @@ public class AuthServiceImpl implements AuthService {
 			try {
 				user.setGender(Gender.valueOf(request.getGender()));
 			} catch (IllegalArgumentException e) {
-				
+
 			}
 		}
 

@@ -72,6 +72,8 @@ export const getRevenueReport = (period = 'year') => api.get(`/admin/reports/rev
 export const getBookingAnalytics = () => api.get("/admin/reports/bookings");
 export const getVehiclePerformance = () => api.get("/admin/reports/vehicles");
 export const getUserAnalytics = () => api.get("/admin/reports/users");
+export const downloadBookingsPdf = () => api.get("/reports/bookings/pdf", { responseType: 'blob' });
+export const downloadBookingsCsv = () => api.get("/reports/bookings/csv", { responseType: 'blob' });
 
 // Reviews APIs
 export const createReview = (reviewData) => api.post("/reviews", reviewData);

@@ -97,6 +97,7 @@ public class SecurityConfig {
 						.hasAuthority(UserRole.ADMIN.name()) // PUT resolve complaint (Admin only)
 						// Admin endpoints - Admin access only
 						.requestMatchers("/api/admin/**").hasAuthority(UserRole.ADMIN.name()) // All admin endpoints
+						.requestMatchers("/api/reports/**").hasAuthority(UserRole.ADMIN.name()) // Report endpoints
 						// Protect Vendor Routes (Only VENDOR role)
 						.requestMatchers("/api/vendor/**").hasAuthority(UserRole.VENDOR.name()).anyRequest()
 						.authenticated())

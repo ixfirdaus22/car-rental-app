@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "/vcJLTzeTip6EVkS1q2tDdNG6FWCwegN7EgkdTHscYjTQxfGPuI/wz6lhz3R5MEdn5j0GBkvC1mcyL6gGnbAuQ==",
+  "success": true,
+  "projectFilePath": "C:\\CDAC\\project\\Final Project\\backend\\pdf-generator\\pdf-generator.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Firdaus\\.nuget\\packages\\questpdf\\2025.12.3\\questpdf.2025.12.3.nupkg.sha512"
+  ],
+  "logs": []
+}
